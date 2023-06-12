@@ -7,15 +7,13 @@ class TranslationService:
         self.translator = Translator()
 
     def translate_from_to(self, text, src, dest):
-        return self.translator.translate(text=text, src=src, dest=dest)
+        s = googletrans.LANGCODES[src.lower()]
+        d = googletrans.LANGCODES[dest.lower()]
+        return self.translator.translate(text=text, src=s, dest=d)
 
     def detect_language(self, text):
         return self.translator.detect(text=text)
 
     @staticmethod
     def get_languages():
-        return googletrans.LANGUAGES
-
-    @staticmethod
-    def get_language_codes():
-        return googletrans.LANGCODES
+        return list(googletrans.LANGUAGES.values())
