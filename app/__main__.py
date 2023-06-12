@@ -1,4 +1,4 @@
-from __app__ import App
+from app.__app__ import App
 
 
 def main():

@@ -4,8 +4,8 @@ from tkinter import Text
 import customtkinter
 from customtkinter import *
 
-from components.ctk_scrollable_dropdown import CTkScrollableDropdown
-from services.translation_service import TranslationService
+from app.components.ctk_scrollable_dropdown import CTkScrollableDropdown
+from app.services.translation_service import TranslationService
 
 DEFAULT_LANGUAGES = ['english', 'romanian', 'french']
 OUTPUT_PLACEHOLDER = 'Translation'
