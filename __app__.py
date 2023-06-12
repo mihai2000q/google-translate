@@ -2,7 +2,7 @@ import customtkinter
 from customtkinter import *
 
 import constants
-from components.frames import HomeFrame
+from frames.home_frame import HomeFrame
 
 customtkinter.set_appearance_mode(constants.APPEARANCE_MODE)
 customtkinter.set_default_color_theme(constants.COLOR_THEME)

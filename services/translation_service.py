@@ -17,3 +17,7 @@ class TranslationService:
     @staticmethod
     def get_languages():
         return list(googletrans.LANGUAGES.values())
+
+    @staticmethod
+    def get_language_by_code(code):
+        return googletrans.LANGUAGES[code]
