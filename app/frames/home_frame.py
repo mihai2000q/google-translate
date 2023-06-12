@@ -1,5 +1,7 @@
 from enum import Enum, auto
 from tkinter import Text
+
+from CTkMessagebox import CTkMessagebox
 from PIL import Image
 
 import customtkinter
@@ -30,6 +32,7 @@ class HomeFrame(CTkFrame):
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
+        self.__never_translated = True
         self.__detect_tab_name = DETECT
         self.__input_languages = DEFAULT_LANGUAGES
         self.__output_languages = DEFAULT_LANGUAGES[::-1]
@@ -81,9 +84,7 @@ class HomeFrame(CTkFrame):
                                  font=CTkFont('Arial', 22), foreground='white')
         self.__input_text.grid()
 
-        # self.__input_text.bind('<Key>', self.__input_text_bind_on_key_pressed)
-
-        self.__output_text = Text(self.__output_tabview, background='#343638', border=0,
+        self.__output_text = Text(self.__output_tabview, background='#303234', border=0,
                                   font=CTkFont('Arial', 22), foreground='gray')
         self.__output_text.insert(1.0, OUTPUT_PLACEHOLDER)
         self.__output_text.config(state='disabled')
@@ -158,10 +159,25 @@ class HomeFrame(CTkFrame):
             self.__input_tabview.delete(inputTab)
             self.__input_tabview.insert(index, outputTab)
         self.__input_tabview.set(outputTab)
+        inputText = self.__input_text.get(1.0, 'end')
+        outputText = self.__output_text.get(1.0, 'end')
+        if len(inputText) < 1 or len(outputText) < 1 or self.__never_translated:
+            return
+        self.__input_text.delete(1.0, 'end')
+        self.__input_text.insert(1.0, outputText)
+        self.__translate()
 
     def __translate(self):
+        self.__never_translated = False
         text = self.__input_text.get(1.0, 'end')
         if len(text) < 1 or text == '\n':
+            CTkMessagebox(title="Missing Input", message="Please enter your input text for translating",
+                          icon='warning', option_1='Ok')
+            if self.__output_text.get(1.0, 'end') != OUTPUT_PLACEHOLDER:
+                self.__output_text.config(state='normal')
+                self.__output_text.delete(1.0, 'end')
+                self.__output_text.insert(1.0, OUTPUT_PLACEHOLDER)
+                self.__output_text.config(state='disabled')
             return
         if self.__state == State.DETECTING:
             self.__detect_language(text)
