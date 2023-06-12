@@ -1,17 +1,21 @@
 from enum import Enum, auto
 from tkinter import Text
+from PIL import Image
 
 import customtkinter
 from customtkinter import *
 
 from app.components.ctk_scrollable_dropdown import CTkScrollableDropdown
 from app.services.translation_service import TranslationService
+from app.utilities import constants
 
 DEFAULT_LANGUAGES = ['english', 'romanian', 'french']
 OUTPUT_PLACEHOLDER = 'Translation'
 INPUT_OPTIONS_PLACEHOLDER = 'New Input Language'
 OUTPUT_OPTIONS_PLACEHOLDER = 'New Output Language'
 DETECT = 'Detect language'
+SWITCH_ICON = 'switch_button.png'
+SWITCH_BUTTON_DISABLED_COLOR = '#6e7f91'
 
 
 class State(Enum):
@@ -32,6 +36,11 @@ class HomeFrame(CTkFrame):
         self.__all_languages = [language for language in self.__translationService.get_languages()]
         self.__state = State.NORMAL
         self.__new_language_options()
+        self.__switch_button = CTkButton(self, text='', width=28, height=28, corner_radius=100,
+                                         command=self.__switch_languages_button,
+                                         image=CTkImage(Image.open(os.path.join(
+                                             constants.ICONS_PATH, SWITCH_ICON)), size=(28, 28)))
+        self.__switch_button.grid(row=0, column=0, columnspan=2, sticky='s')
         self.__tabviews()
         self.__text_widgets()
 
@@ -68,14 +77,14 @@ class HomeFrame(CTkFrame):
             self.__output_tabview.add(language)
 
     def __text_widgets(self):
-        self.__input_text = Text(self.__input_tabview, background='#343638', border=0, font=CTkFont('Arial', 20),
-                                 foreground='white')
+        self.__input_text = Text(self.__input_tabview, background='#343638', border=0,
+                                 font=CTkFont('Arial', 22), foreground='white')
         self.__input_text.grid()
 
         # self.__input_text.bind('<Key>', self.__input_text_bind_on_key_pressed)
 
-        self.__output_text = Text(self.__output_tabview, background='#343638', border=0, font=CTkFont('Arial', 20),
-                                  foreground='gray')
+        self.__output_text = Text(self.__output_tabview, background='#343638', border=0,
+                                  font=CTkFont('Arial', 22), foreground='gray')
         self.__output_text.insert(1.0, OUTPUT_PLACEHOLDER)
         self.__output_text.config(state='disabled')
         self.__output_text.grid()
@@ -108,9 +117,12 @@ class HomeFrame(CTkFrame):
         text = self.__input_text.get(1.0, 'end')
         if self.__input_tabview.get() not in self.__input_languages:
             self.__state = State.DETECTING
+            print(self.__switch_button.cget('fg_color'))
+            self.__switch_button.configure(state='disabled', fg_color=SWITCH_BUTTON_DISABLED_COLOR)
             self.__detect_language(text)
         else:
             self.__state = State.NORMAL
+            self.__switch_button.configure(state='normal', fg_color='#1f538d')
             self.__switch_tab_languages(self.__input_tabview, self.__output_tabview, self.__output_languages)
         if len(text) > 1:
             self.__translate()
@@ -128,6 +140,24 @@ class HomeFrame(CTkFrame):
             self.__detect_tab_name = f'{detectedLanguage} - Detected'
             self.__input_tabview.insert(0, self.__detect_tab_name)
             self.__input_tabview.set(self.__detect_tab_name)
+
+    def __switch_languages_button(self):
+        inputTab = self.__input_tabview.get()
+        outputTab = self.__output_tabview.get()
+        if inputTab == outputTab:
+            return
+        if inputTab not in self.__output_languages:
+            index = self.__output_languages.index(outputTab)
+            self.__output_languages[index] = inputTab
+            self.__output_tabview.delete(outputTab)
+            self.__output_tabview.insert(index, inputTab)
+        self.__output_tabview.set(inputTab)
+        if outputTab not in self.__input_languages:
+            index = self.__input_languages.index(inputTab)
+            self.__input_languages[index] = outputTab
+            self.__input_tabview.delete(inputTab)
+            self.__input_tabview.insert(index, outputTab)
+        self.__input_tabview.set(outputTab)
 
     def __translate(self):
         text = self.__input_text.get(1.0, 'end')
