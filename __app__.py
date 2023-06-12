@@ -14,6 +14,6 @@ class App(CTk):
         self.title(constants.TITLE)
         self.geometry(f'{constants.WIDTH}x{constants.HEIGHT}')
 
-        self.homeFrame = HomeFrame(self)
+        self.homeFrame = HomeFrame(master=self)
         self.homeFrame.pack(anchor=CENTER, expand=True, fill=BOTH, pady=50, padx=50)
         self.mainloop()
