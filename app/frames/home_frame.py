@@ -35,7 +35,7 @@ class HomeFrame(CTkFrame):
         self.__tabviews()
         self.__text_widgets()
 
-        CTkButton(self, text='Translate', width=200, height=40, corner_radius=50, font=('Arial', 18),
+        CTkButton(self, text='Translate', width=200, height=40, corner_radius=50, font=CTkFont('Arial', 18),
                   command=self.__translate)\
             .grid(row=2, column=0, columnspan=2, pady=25)
 
@@ -68,13 +68,13 @@ class HomeFrame(CTkFrame):
             self.__output_tabview.add(language)
 
     def __text_widgets(self):
-        self.__input_text = Text(self.__input_tabview, background='#343638', border=0, font=('Arial', 20),
+        self.__input_text = Text(self.__input_tabview, background='#343638', border=0, font=CTkFont('Arial', 20),
                                  foreground='white')
         self.__input_text.grid()
 
         # self.__input_text.bind('<Key>', self.__input_text_bind_on_key_pressed)
 
-        self.__output_text = Text(self.__output_tabview, background='#343638', border=0, font=('Arial', 20),
+        self.__output_text = Text(self.__output_tabview, background='#343638', border=0, font=CTkFont('Arial', 20),
                                   foreground='gray')
         self.__output_text.insert(1.0, OUTPUT_PLACEHOLDER)
         self.__output_text.config(state='disabled')
