@@ -82,23 +82,25 @@ class HomeFrame(CTkFrame):
 
     def __select_new_input_language(self, text):
         self.__input_options.set(INPUT_OPTIONS_PLACEHOLDER)
-        self.__select_new_language(text, self.__input_tabview, self.__output_languages)
+        self.__select_new_language(text, self.__input_tabview, self.__input_languages, 1)
         self.__input_tabview_command()
 
     def __select_new_output_language(self, text):
         self.__output_options.set(OUTPUT_OPTIONS_PLACEHOLDER)
-        self.__select_new_language(text, self.__output_tabview, self.__input_languages)
-        self.__input_tabview_command()
+        self.__select_new_language(text, self.__output_tabview, self.__output_languages)
+        self.__output_tabview_command()
 
-    def __select_new_language(self, text, tabview, languages):
+    def __select_new_language(self, text, tabview, languages, offset=0):
         self.focus()
         if text in languages:
             tabview.set(text)
             return
+        if self.__state == State.DETECTING:
+            tabview.set(languages[0])
         currentLanguage = tabview.get()
         currentIndex = languages.index(currentLanguage)
         tabview.delete(currentLanguage)
-        tabview.insert(currentIndex, text)
+        tabview.insert(currentIndex + offset, text)
         tabview.set(text)
         languages[currentIndex] = text
 
@@ -109,12 +111,12 @@ class HomeFrame(CTkFrame):
             self.__detect_language(text)
         else:
             self.__state = State.NORMAL
-            self.__switch_tab_languages(self.__output_tabview, self.__input_tabview, self.__input_languages)
+            self.__switch_tab_languages(self.__input_tabview, self.__output_tabview, self.__output_languages)
         if len(text) > 1:
             self.__translate()
 
     def __output_tabview_command(self):
-        self.__switch_tab_languages(self.__input_tabview, self.__output_tabview, self.__output_languages)
+        self.__switch_tab_languages(self.__output_tabview, self.__input_tabview, self.__input_languages)
         if len(self.__input_text.get(1.0, 'end')) > 1:
             self.__translate()
 
@@ -148,6 +150,6 @@ class HomeFrame(CTkFrame):
     def __switch_tab_languages(tabview1, tabview2, languages):
         if tabview1.get() == tabview2.get():
             for language in languages:
-                if tabview1.get() != language:
-                    tabview1.set(language)
+                if tabview2.get() != language:
+                    tabview2.set(language)
                     break
